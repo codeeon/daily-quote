@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>매일의 명언 - 오늘의 한국어 명언</title>
+    <meta name="title" content="매일의 명언 - 오늘의 한국어 명언" />
+    <meta name="description" content="매일 새로운 한국어 명언과 지혜를 만나보세요. 과거의 명언은 일관되게 보존되며, 다양한 테마의 명언을 제공합니다." />
+    <meta name="keywords" content="명언, 한국어 명언, 일일 명언, 지혜, 영감, 동기부여" />
+    <meta name="author" content="매일의 명언" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://daily-quotes-korean.vercel.app/" />
+    <meta property="og:title" content="매일의 명언 - 오늘의 한국어 명언" />
+    <meta property="og:description" content="매일 새로운 한국어 명언과 지혜를 만나보세요. 과거의 명언은 일관되게 보존되며, 다양한 테마의 명언을 제공합니다." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:locale" content="ko_KR" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://daily-quotes-korean.vercel.app/" />
+    <meta property="twitter:title" content="매일의 명언 - 오늘의 한국어 명언" />
+    <meta property="twitter:description" content="매일 새로운 한국어 명언과 지혜를 만나보세요. 과거의 명언은 일관되게 보존되며, 다양한 테마의 명언을 제공합니다." />
+    <meta property="twitter:image" content="/og-image.png" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="매일의 명언" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://korean-advice-open-api.vercel.app" />
+    <link rel="dns-prefetch" href="https://korean-advice-open-api.vercel.app" />
+
+    <!-- Fonts preload -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Service worker registration failed, but app still works
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
