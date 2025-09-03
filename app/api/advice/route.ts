@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
 interface KoreanAdviceResponse {
   message: string;
@@ -42,30 +42,7 @@ const FALLBACK_QUOTES = [
   }
 ];
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponse>
-): Promise<void> {
-  // CORS 헤더 설정
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'GET') {
-    res.status(405).json({
-      message: 'Method not allowed',
-      author: 'System',
-      authorProfile: 'Error',
-      timestamp: new Date().toISOString(),
-    });
-    return;
-  }
-
+export async function GET(request: NextRequest) {
   try {
     console.log('Korean Advice API 호출 시작');
     
@@ -91,16 +68,22 @@ export default async function handler(
 
     console.log('Korean Advice API 호출 성공');
     
-    // 캐시 헤더 설정 (5분)
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
-    
-    res.status(200).json({
+    const response: ApiResponse = {
       message: data.message,
       author: data.author,
       authorProfile: data.authorProfile || '',
       timestamp: new Date().toISOString(),
+    };
+
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 's-maxage=300, stale-while-revalidate',
+      },
     });
-    return;
 
   } catch (error) {
     console.error('API 호출 실패:', error);
@@ -109,11 +92,30 @@ export default async function handler(
     const hash = Date.now() % FALLBACK_QUOTES.length;
     const fallbackQuote = FALLBACK_QUOTES[hash];
     
-    res.status(200).json({
+    const response: ApiResponse = {
       ...fallbackQuote,
       timestamp: new Date().toISOString(),
       fallback: true,
+    };
+
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
     });
-    return;
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }

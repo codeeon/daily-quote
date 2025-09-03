@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar, Home } from 'lucide-react';
 import { cn, isFutureDate, isToday } from '@/lib/utils';
