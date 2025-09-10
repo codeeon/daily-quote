@@ -31,7 +31,9 @@ export class SupabaseService {
     }
 
     try {
-      const { error } = await supabase!
+      console.log('Saving quote to Supabase:', { date, quote });
+      
+      const { data, error } = await supabase!
         .from('daily_quotes')
         .upsert({
           date,
@@ -42,10 +44,18 @@ export class SupabaseService {
           api_source: 'korean-advice-api',
         }, {
           onConflict: 'date'
-        });
+        })
+        .select();
 
       if (error) {
-        console.error('Error saving quote history:', error);
+        console.error('Error saving quote history:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+      } else {
+        console.log('Successfully saved quote to Supabase:', data);
       }
     } catch (error) {
       console.error('Error connecting to Supabase:', error);

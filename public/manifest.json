@@ -9,26 +9,5 @@
   "orientation": "portrait-primary",
   "categories": ["lifestyle", "education", "wellness"],
   "lang": "ko",
-  "dir": "ltr",
-  "icons": [
-    {
-      "src": "/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icon-512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "maskable any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "오늘의 명언",
-      "url": "/",
-      "description": "오늘의 명언 바로 보기"
-    }
-  ]
+  "dir": "ltr"
 }
