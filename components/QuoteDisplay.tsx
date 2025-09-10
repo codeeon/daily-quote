@@ -19,20 +19,11 @@ export async function QuoteDisplay({ currentDate }: QuoteDisplayProps) {
     console.error('Error loading quote:', err);
   }
 
-  // Simple date parsing - just convert string to Date object
-  const currentDateObj = new Date(currentDate + 'T12:00:00');
-  
-  console.log('QuoteDisplay date parsing:', {
-    currentDateString: currentDate,
-    parsedDate: currentDateObj.toISOString(),
-    localeDateString: currentDateObj.toLocaleDateString()
-  });
-
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Navigation */}
       <div className="slide-in">
-        <Navigation currentDate={currentDateObj} />
+        <Navigation currentDate={currentDate} />
       </div>
 
       {/* Quote Display */}

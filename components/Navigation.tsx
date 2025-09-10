@@ -3,65 +3,50 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar, Home } from 'lucide-react';
-import { cn, isBeforeMinDate, isToday, formatDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 interface NavigationProps {
-  currentDate: Date;
+  currentDate: string;
   className?: string;
 }
 
 export function Navigation({ currentDate, className }: NavigationProps) {
   const router = useRouter();
-
-  console.log({ currentDate });
+  
+  const current = dayjs(currentDate);
+  const today = dayjs();
+  const minDate = dayjs('2025-09-01');
 
   const handlePrevDay = () => {
-    const currentDateStr = formatDate(currentDate);
-    const [year, month, day] = currentDateStr.split('-').map(Number);
-    const prevDate = new Date(year, month - 1, day);
-
-    if (!isBeforeMinDate(prevDate)) {
-      router.replace(`/?date=${formatDate(prevDate)}`);
+    const prevDate = current.subtract(1, 'day');
+    
+    if (prevDate.isAfter(minDate) || prevDate.isSame(minDate)) {
+      router.replace(`/?date=${prevDate.format('YYYY-MM-DD')}`);
     }
   };
 
   const handleNextDay = () => {
-    const currentDateStr = formatDate(currentDate);
-    const [year, month, day] = currentDateStr.split('-').map(Number);
-    const nextDate = new Date(year, month - 1, day + 2);
-
-    const today = new Date();
-    if (nextDate <= today) {
-      router.replace(`/?date=${formatDate(nextDate)}`);
+    const nextDate = current.add(1, 'day');
+    
+    if (nextDate.isBefore(today) || nextDate.isSame(today)) {
+      router.replace(`/?date=${nextDate.format('YYYY-MM-DD')}`);
     }
   };
 
   const handleTodayClick = () => {
-    const today = new Date();
-    const minDate = new Date('2025-09-01');
-
-    if (today < minDate) {
-      router.replace(`/?date=${formatDate(minDate)}`);
-    } else {
-      router.replace(`/?date=${formatDate(today)}`);
-    }
+    const targetDate = today.isBefore(minDate) ? minDate : today;
+    router.replace(`/?date=${targetDate.format('YYYY-MM-DD')}`);
   };
 
-  const canGoNext = (() => {
-    const nextDate = new Date(currentDate);
-    nextDate.setDate(nextDate.getDate() + 1);
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    return nextDate <= today;
-  })();
-
-  const canGoPrev = (() => {
-    const prevDate = new Date(currentDate);
-    prevDate.setDate(prevDate.getDate() - 1);
-    return !isBeforeMinDate(prevDate);
-  })();
-
-  const showTodayButton = !isToday(currentDate);
+  const canGoNext = current.add(1, 'day').isSameOrBefore(today);
+  const canGoPrev = current.subtract(1, 'day').isSameOrAfter(minDate);
+  const showTodayButton = !current.isSame(today, 'day');
 
   return (
     <div
@@ -90,12 +75,7 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg mx-3 flex-1 justify-center'>
           <Calendar className='h-4 w-4 text-blue-600 flex-shrink-0' />
           <span className='font-semibold text-sm text-center'>
-            {currentDate.toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              weekday: 'short',
-            })}
+            {current.format('YYYY년 M월 D일 ddd')}
           </span>
         </div>
 
@@ -118,10 +98,11 @@ export function Navigation({ currentDate, className }: NavigationProps) {
       {/* Mobile: Today button below */}
       {showTodayButton && (
         <Button
-          variant='ghost'
+          variant='outline'
           size='sm'
           onClick={handleTodayClick}
-          className='text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 sm:hidden'
+          className='slide-in text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200 sm:hidden'
+          style={{ animationDelay: '0.3s' }}
           aria-label='오늘로 이동'
         >
           <Home className='h-4 w-4 mr-2' />
@@ -149,21 +130,17 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         <div className='flex items-center gap-3 px-6 py-3 rounded-xl bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg'>
           <Calendar className='h-5 w-5 text-blue-600' />
           <span className='font-semibold text-lg'>
-            {currentDate.toLocaleDateString('ko-KR', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              weekday: 'short',
-            })}
+            {current.format('YYYY년 M월 D일 ddd')}
           </span>
         </div>
 
         {showTodayButton && (
           <Button
-            variant='ghost'
+            variant='outline'
             size='sm'
             onClick={handleTodayClick}
-            className='text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50'
+            className='slide-in text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'
+            style={{ animationDelay: '0.3s' }}
             aria-label='오늘로 이동'
           >
             <Home className='h-4 w-4 mr-2' />
