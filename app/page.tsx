@@ -14,7 +14,10 @@ interface Props {
 }
 
 function getValidDate(dateParam?: string): string {
-  const today = new Date();
+  // 한국 시간 기준 오늘 날짜
+  const now = new Date();
+  const koreanNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+  const today = new Date(koreanNow.getFullYear(), koreanNow.getMonth(), koreanNow.getDate());
   const minDate = new Date('2025-09-01');
 
   if (dateParam) {

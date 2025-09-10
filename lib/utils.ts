@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0];
+  // 한국 시간 기준으로 날짜 포맷팅
+  const koreanDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // UTC + 9시간
+  return koreanDate.toISOString().split('T')[0];
 }
 
 export function parseDate(dateString: string): Date {
@@ -19,8 +21,10 @@ export function isToday(date: Date): boolean {
 }
 
 export function isFutureDate(date: Date): boolean {
-  const today = new Date();
-  today.setHours(23, 59, 59, 999);
+  // 한국 시간 기준으로 오늘 날짜 계산
+  const now = new Date();
+  const koreanNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+  const today = new Date(koreanNow.getFullYear(), koreanNow.getMonth(), koreanNow.getDate(), 23, 59, 59, 999);
   
   const checkDate = new Date(date);
   checkDate.setHours(0, 0, 0, 0);
