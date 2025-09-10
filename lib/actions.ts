@@ -60,17 +60,22 @@ export async function getQuoteForDate(date: string): Promise<Quote> {
   
   try {
     // Try to fetch from database first
+    console.log(`Checking database for quote on date: ${date}`);
     const dbQuote = await supabaseService.getQuoteForDate(date);
     
     if (dbQuote) {
-      console.log('Quote found in database');
+      console.log('✅ Quote found in database, using cached version:', {
+        message: dbQuote.message.substring(0, 50) + '...',
+        author: dbQuote.author,
+        date: dbQuote.date
+      });
       return {
         ...dbQuote,
         source: 'database' as const
       };
     }
     
-    console.log('No quote found in database, fetching from API and saving');
+    console.log('❌ No quote found in database, fetching from API and saving');
     
     try {
       // Fetch from Korean Advice API

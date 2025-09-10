@@ -19,7 +19,14 @@ export async function QuoteDisplay({ currentDate }: QuoteDisplayProps) {
     console.error('Error loading quote:', err);
   }
 
-  const currentDateObj = new Date(currentDate + 'T00:00:00');
+  // Simple date parsing - just convert string to Date object
+  const currentDateObj = new Date(currentDate + 'T12:00:00');
+  
+  console.log('QuoteDisplay date parsing:', {
+    currentDateString: currentDate,
+    parsedDate: currentDateObj.toISOString(),
+    localeDateString: currentDateObj.toLocaleDateString()
+  });
 
   return (
     <div className="space-y-6 sm:space-y-8">

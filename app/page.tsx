@@ -16,24 +16,26 @@ interface Props {
 function getValidDate(dateParam?: string): string {
   const today = new Date();
   const minDate = new Date('2025-09-01');
-  
+
   if (dateParam) {
     const requestedDate = new Date(dateParam + 'T00:00:00');
-    if (!isNaN(requestedDate.getTime()) && 
-        !isFutureDate(requestedDate) && 
-        !isBeforeMinDate(requestedDate)) {
+    if (
+      !isNaN(requestedDate.getTime()) &&
+      !isFutureDate(requestedDate) &&
+      !isBeforeMinDate(requestedDate)
+    ) {
       return dateParam;
     }
   }
-  
+
   // Return today or min date, whichever is later
   return formatDate(today < minDate ? minDate : today);
 }
 
 export default async function Home({ searchParams }: Props) {
   const params = await searchParams;
-  const currentDateString = getValidDate(params.date);
-  
+  const currentDateString = getValidDate(params.date) || formatDate(new Date());
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12'>
@@ -51,14 +53,16 @@ export default async function Home({ searchParams }: Props) {
 
         {/* Main Content */}
         <main className='w-full max-w-5xl mx-auto'>
-          <Suspense fallback={
-            <div className="space-y-6 sm:space-y-8">
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600"></div>
+          <Suspense
+            fallback={
+              <div className='space-y-6 sm:space-y-8'>
+                <div className='flex items-center justify-center'>
+                  <div className='animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600'></div>
+                </div>
+                <QuoteCard quote={null} loading={true} />
               </div>
-              <QuoteCard quote={null} loading={true} />
-            </div>
-          }>
+            }
+          >
             <QuoteDisplay currentDate={currentDateString} />
           </Suspense>
         </main>
