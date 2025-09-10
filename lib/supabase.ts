@@ -31,28 +31,56 @@ export class SupabaseService {
     }
 
     try {
-      console.log('Saving quote to Supabase:', { date, quote });
+      console.log('Saving quote to Supabase:', { 
+        date, 
+        quote,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'configured' : 'missing',
+        supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'configured' : 'missing'
+      });
+      
+      // First, test if table exists by trying to read it
+      const { error: testError } = await supabase!
+        .from('daily_quotes')
+        .select('id')
+        .limit(1);
+        
+      if (testError) {
+        console.error('Table access test failed:', {
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint,
+          code: testError.code
+        });
+        return;
+      }
+      
+      console.log('Table access test passed, proceeding with upsert');
+      
+      const upsertData = {
+        date,
+        quote_data: quote,
+        message: quote.message,
+        author: quote.author,
+        author_profile: quote.authorProfile || '',
+        api_source: 'korean-advice-api',
+      };
+      
+      console.log('Upsert data:', upsertData);
       
       const { data, error } = await supabase!
         .from('daily_quotes')
-        .upsert({
-          date,
-          quote_data: quote,
-          message: quote.message,
-          author: quote.author,
-          author_profile: quote.authorProfile || '',
-          api_source: 'korean-advice-api',
-        }, {
+        .upsert(upsertData, {
           onConflict: 'date'
         })
         .select();
 
       if (error) {
         console.error('Error saving quote history:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
+          message: error.message || 'No message',
+          details: error.details || 'No details',
+          hint: error.hint || 'No hint',
+          code: error.code || 'No code',
+          fullError: error
         });
       } else {
         console.log('Successfully saved quote to Supabase:', data);

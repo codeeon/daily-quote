@@ -4,6 +4,7 @@ export interface Quote {
   authorProfile: string;
   id?: string;
   date?: string;
+  source?: 'api' | 'database' | 'fallback';
 }
 
 export interface QuoteHistory {

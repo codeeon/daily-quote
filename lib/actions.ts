@@ -1,7 +1,7 @@
 'use server';
 
 import { SupabaseService } from '@/lib/supabase';
-import { isBeforeMinDate } from '@/lib/utils';
+import { isBeforeMinDate, getDeterministicIndex } from '@/lib/utils';
 import type { Quote } from '@/types';
 
 interface KoreanAdviceResponse {
@@ -9,6 +9,35 @@ interface KoreanAdviceResponse {
   author: string;
   authorProfile: string;
 }
+
+// Emergency fallback quotes for when both API and DB fail
+const EMERGENCY_FALLBACK_QUOTES: Omit<Quote, 'date' | 'source'>[] = [
+  {
+    message: "성공은 실패를 거듭한 끝에 찾아온다.",
+    author: "한국 속담",
+    authorProfile: "전통 지혜"
+  },
+  {
+    message: "시작이 반이다.",
+    author: "한국 속담", 
+    authorProfile: "전통 지혜"
+  },
+  {
+    message: "천 리 길도 한 걸음부터.",
+    author: "한국 속담",
+    authorProfile: "전통 지혜"
+  },
+  {
+    message: "노력하는 자에게 길은 열린다.",
+    author: "한국 속담",
+    authorProfile: "전통 지혜"
+  },
+  {
+    message: "오늘의 나를 만든 것은 어제의 선택이다.",
+    author: "현대 명언",
+    authorProfile: "자기계발"
+  }
+];
 
 export async function getQuoteForDate(date: string): Promise<Quote> {
   // Check for future dates - reject if date is in the future
@@ -35,52 +64,80 @@ export async function getQuoteForDate(date: string): Promise<Quote> {
     
     if (dbQuote) {
       console.log('Quote found in database');
-      return dbQuote;
+      return {
+        ...dbQuote,
+        source: 'database' as const
+      };
     }
     
     console.log('No quote found in database, fetching from API and saving');
     
-    // Fetch from Korean Advice API
-    const response = await fetch('https://korean-advice-open-api.vercel.app/api/advice', {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Daily-Quotes-App/1.0',
-      },
-      cache: 'no-cache',
-      next: {
-        tags: ['quote', `quote-${date}`],
-      },
-    });
+    try {
+      // Fetch from Korean Advice API
+      const response = await fetch('https://korean-advice-open-api.vercel.app/api/advice', {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Daily-Quotes-App/1.0',
+        },
+        cache: 'no-cache',
+        next: {
+          tags: ['quote', `quote-${date}`],
+        },
+      });
 
-    if (!response.ok) {
-      console.error('Korean Advice API error:', response.status);
-      throw new Error(`API responded with status: ${response.status}`);
+      if (!response.ok) {
+        console.error('Korean Advice API error:', response.status);
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+
+      const data: KoreanAdviceResponse = await response.json();
+
+      if (!data.message || !data.author) {
+        console.error('Invalid API response:', data);
+        throw new Error('Invalid response format');
+      }
+
+      const quote: Quote = {
+        message: data.message.trim(),
+        author: data.author.trim(),
+        authorProfile: data.authorProfile?.trim() || '',
+        date,
+        source: 'api' as const
+      };
+
+      console.log('Korean Advice API success, saving to database');
+      
+      // Save to database for future requests
+      await supabaseService.saveQuoteHistory(date, quote);
+      
+      return quote;
+      
+    } catch (apiError) {
+      console.error('API failed, using emergency fallback:', apiError);
+      
+      // Use emergency fallback when both DB and API fail
+      const index = getDeterministicIndex(date, EMERGENCY_FALLBACK_QUOTES.length);
+      const fallbackQuote = EMERGENCY_FALLBACK_QUOTES[index];
+      
+      return {
+        ...fallbackQuote,
+        date,
+        source: 'fallback' as const
+      };
     }
-
-    const data: KoreanAdviceResponse = await response.json();
-
-    if (!data.message || !data.author) {
-      console.error('Invalid API response:', data);
-      throw new Error('Invalid response format');
-    }
-
-    const quote: Quote = {
-      message: data.message.trim(),
-      author: data.author.trim(),
-      authorProfile: data.authorProfile?.trim() || '',
-      date,
-    };
-
-    console.log('Korean Advice API success, saving to database');
-    
-    // Save to database for future requests
-    await supabaseService.saveQuoteHistory(date, quote);
-    
-    return quote;
     
   } catch (error) {
     console.error('Error fetching quote:', error);
-    throw new Error('명언을 불러오는데 실패했습니다.');
+    
+    // Last resort fallback
+    const index = getDeterministicIndex(date, EMERGENCY_FALLBACK_QUOTES.length);
+    const fallbackQuote = EMERGENCY_FALLBACK_QUOTES[index];
+    
+    return {
+      ...fallbackQuote,
+      date,
+      source: 'fallback' as const
+    };
   }
 }
 

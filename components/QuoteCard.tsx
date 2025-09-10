@@ -53,6 +53,12 @@ export function QuoteCard({ quote, loading, className }: QuoteCardProps) {
                 <div className="text-xs sm:text-sm opacity-70 mt-1">{quote.authorProfile}</div>
               )}
             </div>
+            
+            {quote.source === 'fallback' && (
+              <div className="text-xs text-amber-600 bg-amber-50 px-3 py-1 rounded-full inline-block mt-3 border border-amber-200">
+                💾 임시 명언 (네트워크 연결 확인 필요)
+              </div>
+            )}
           </footer>
         </div>
       </CardContent>
