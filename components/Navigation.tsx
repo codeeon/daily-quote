@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Calendar, Home, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
@@ -19,8 +18,6 @@ interface NavigationProps {
 
 export function Navigation({ currentDate, className }: NavigationProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [loadingDirection, setLoadingDirection] = useState<'prev' | 'next' | 'today' | null>(null);
   
   const current = dayjs(currentDate);
   const today = dayjs();
@@ -30,10 +27,7 @@ export function Navigation({ currentDate, className }: NavigationProps) {
     const prevDate = current.subtract(1, 'day');
     
     if (prevDate.isAfter(minDate) || prevDate.isSame(minDate)) {
-      setLoadingDirection('prev');
-      startTransition(() => {
-        router.replace(`/?date=${prevDate.format('YYYY-MM-DD')}`);
-      });
+      router.replace(`/?date=${prevDate.format('YYYY-MM-DD')}`);
     }
   };
 
@@ -41,25 +35,14 @@ export function Navigation({ currentDate, className }: NavigationProps) {
     const nextDate = current.add(1, 'day');
     
     if (nextDate.isBefore(today) || nextDate.isSame(today)) {
-      setLoadingDirection('next');
-      startTransition(() => {
-        router.replace(`/?date=${nextDate.format('YYYY-MM-DD')}`);
-      });
+      router.replace(`/?date=${nextDate.format('YYYY-MM-DD')}`);
     }
   };
 
   const handleTodayClick = () => {
     const targetDate = today.isBefore(minDate) ? minDate : today;
-    setLoadingDirection('today');
-    startTransition(() => {
-      router.replace(`/?date=${targetDate.format('YYYY-MM-DD')}`);
-    });
+    router.replace(`/?date=${targetDate.format('YYYY-MM-DD')}`);
   };
-
-  // Reset loading state when navigation completes
-  if (!isPending && loadingDirection) {
-    setLoadingDirection(null);
-  }
 
   const canGoNext = current.add(1, 'day').isSameOrBefore(today);
   const canGoPrev = current.subtract(1, 'day').isSameOrAfter(minDate);
@@ -78,18 +61,14 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           variant='outline'
           size='default'
           onClick={handlePrevDay}
-          disabled={!canGoPrev || isPending}
+          disabled={!canGoPrev}
           className={cn(
             'shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0',
-            (!canGoPrev || isPending) && 'opacity-50 cursor-not-allowed'
+            !canGoPrev && 'opacity-50 cursor-not-allowed'
           )}
           aria-label='이전 날짜'
         >
-          {isPending && loadingDirection === 'prev' ? (
-            <Loader2 className='h-4 w-4 animate-spin' />
-          ) : (
-            <ChevronLeft className='h-4 w-4' />
-          )}
+          <ChevronLeft className='h-4 w-4' />
         </Button>
 
         <div className='flex items-center gap-2 px-4 py-2 rounded-lg bg-white/70 backdrop-blur-sm border border-white/20 shadow-lg mx-3 flex-1 justify-center'>
@@ -103,18 +82,14 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           variant='outline'
           size='default'
           onClick={handleNextDay}
-          disabled={!canGoNext || isPending}
+          disabled={!canGoNext}
           className={cn(
             'shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0',
-            (!canGoNext || isPending) && 'opacity-50 cursor-not-allowed'
+            !canGoNext && 'opacity-50 cursor-not-allowed'
           )}
           aria-label='다음 날짜'
         >
-          {isPending && loadingDirection === 'next' ? (
-            <Loader2 className='h-4 w-4 animate-spin' />
-          ) : (
-            <ChevronRight className='h-4 w-4' />
-          )}
+          <ChevronRight className='h-4 w-4' />
         </Button>
       </div>
 
@@ -124,18 +99,10 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           variant='outline'
           size='sm'
           onClick={handleTodayClick}
-          disabled={isPending}
-          className={cn(
-            'text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200 sm:hidden',
-            isPending && 'opacity-50 cursor-not-allowed'
-          )}
+          className='text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200 sm:hidden'
           aria-label='오늘로 이동'
         >
-          {isPending && loadingDirection === 'today' ? (
-            <Loader2 className='h-4 w-4 mr-2 animate-spin' />
-          ) : (
-            <Home className='h-4 w-4 mr-2' />
-          )}
+          <Home className='h-4 w-4 mr-2' />
           오늘
         </Button>
       )}
@@ -145,18 +112,14 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         variant='outline'
         size='lg'
         onClick={handlePrevDay}
-        disabled={!canGoPrev || isPending}
+        disabled={!canGoPrev}
         className={cn(
           'hidden sm:flex shadow-sm hover:shadow-md transition-shadow duration-200',
-          (!canGoPrev || isPending) && 'opacity-50 cursor-not-allowed'
+          !canGoPrev && 'opacity-50 cursor-not-allowed'
         )}
         aria-label='이전 날짜'
       >
-        {isPending && loadingDirection === 'prev' ? (
-          <Loader2 className='h-5 w-5 animate-spin' />
-        ) : (
-          <ChevronLeft className='h-5 w-5' />
-        )}
+        <ChevronLeft className='h-5 w-5' />
       </Button>
 
       <div className='hidden sm:flex items-center gap-4'>
@@ -172,18 +135,10 @@ export function Navigation({ currentDate, className }: NavigationProps) {
             variant='outline'
             size='sm'
             onClick={handleTodayClick}
-            disabled={isPending}
-            className={cn(
-              'text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200',
-              isPending && 'opacity-50 cursor-not-allowed'
-            )}
+            className='text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200'
             aria-label='오늘로 이동'
           >
-            {isPending && loadingDirection === 'today' ? (
-              <Loader2 className='h-4 w-4 mr-2 animate-spin' />
-            ) : (
-              <Home className='h-4 w-4 mr-2' />
-            )}
+            <Home className='h-4 w-4 mr-2' />
             오늘
           </Button>
         )}
@@ -193,18 +148,14 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         variant='outline'
         size='lg'
         onClick={handleNextDay}
-        disabled={!canGoNext || isPending}
+        disabled={!canGoNext}
         className={cn(
           'hidden sm:flex shadow-sm hover:shadow-md transition-shadow duration-200',
-          (!canGoNext || isPending) && 'opacity-50 cursor-not-allowed'
+          !canGoNext && 'opacity-50 cursor-not-allowed'
         )}
         aria-label='다음 날짜'
       >
-        {isPending && loadingDirection === 'next' ? (
-          <Loader2 className='h-5 w-5 animate-spin' />
-        ) : (
-          <ChevronRight className='h-5 w-5' />
-        )}
+        <ChevronRight className='h-5 w-5' />
       </Button>
     </div>
   );

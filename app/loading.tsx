@@ -1,17 +1,7 @@
-import { Suspense } from 'react';
-import { HomePage } from '@/components/HomePage';
 import { NavigationLoading } from '@/components/NavigationLoading';
 import { QuoteCard } from '@/components/QuoteCard';
 
-interface SearchParams {
-  date?: string;
-}
-
-interface Props {
-  searchParams: Promise<SearchParams>;
-}
-
-export default function Home({ searchParams }: Props) {
+export default function Loading() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12'>
@@ -29,16 +19,10 @@ export default function Home({ searchParams }: Props) {
 
         {/* Main Content */}
         <main className='w-full max-w-5xl mx-auto'>
-          <Suspense
-            fallback={
-              <div className='space-y-6 sm:space-y-8'>
-                <NavigationLoading />
-                <QuoteCard quote={null} loading={true} />
-              </div>
-            }
-          >
-            <HomePage searchParams={searchParams} />
-          </Suspense>
+          <div className='space-y-6 sm:space-y-8'>
+            <NavigationLoading />
+            <QuoteCard quote={null} loading={true} />
+          </div>
         </main>
       </div>
     </div>
