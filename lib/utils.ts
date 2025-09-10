@@ -20,7 +20,26 @@ export function isToday(date: Date): boolean {
 
 export function isFutureDate(date: Date): boolean {
   const today = new Date();
-  return date > today;
+  today.setHours(23, 59, 59, 999);
+  
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+  
+  return checkDate > today;
+}
+
+export function isBeforeMinDate(date: Date): boolean {
+  const minDate = new Date('2025-09-01');
+  minDate.setHours(0, 0, 0, 0);
+  
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+  
+  return checkDate < minDate;
+}
+
+export function isValidDate(date: Date): boolean {
+  return !isFutureDate(date) && !isBeforeMinDate(date);
 }
 
 export function addDays(date: Date, days: number): Date {

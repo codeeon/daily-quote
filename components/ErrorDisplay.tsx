@@ -17,11 +17,11 @@ export function ErrorDisplay({ error, onRetry, className }: ErrorDisplayProps) {
   const getErrorIcon = () => {
     switch (error.type) {
       case ErrorType.NETWORK_ERROR:
-        return <Wifi className="h-8 w-8 text-orange-500" />;
+        return <Wifi className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500" />;
       case ErrorType.RATE_LIMIT:
-        return <AlertTriangle className="h-8 w-8 text-yellow-500" />;
+        return <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />;
       default:
-        return <AlertTriangle className="h-8 w-8 text-red-500" />;
+        return <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />;
     }
   };
 
@@ -56,18 +56,18 @@ export function ErrorDisplay({ error, onRetry, className }: ErrorDisplayProps) {
   };
 
   return (
-    <Card className={cn("w-full max-w-2xl mx-auto", className)}>
-      <CardContent className="p-8">
-        <div className="text-center space-y-4 fade-in">
+    <Card className={cn("w-full mx-auto", className)}>
+      <CardContent className="p-6 sm:p-8">
+        <div className="text-center space-y-3 sm:space-y-4 fade-in">
           <div className="flex justify-center">
             {getErrorIcon()}
           </div>
           
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div className="space-y-1 sm:space-y-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
               {getErrorTitle()}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground px-4 sm:px-0">
               {error.message || getErrorDescription()}
             </p>
           </div>
@@ -76,7 +76,8 @@ export function ErrorDisplay({ error, onRetry, className }: ErrorDisplayProps) {
             <Button
               onClick={onRetry}
               variant="outline"
-              className="mt-4"
+              size="sm"
+              className="mt-3 sm:mt-4 touch-manipulation"
               aria-label="다시 시도"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -84,7 +85,7 @@ export function ErrorDisplay({ error, onRetry, className }: ErrorDisplayProps) {
             </Button>
           )}
 
-          <div className="text-xs text-muted-foreground mt-4">
+          <div className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4">
             대체 명언이 표시되었습니다.
           </div>
         </div>

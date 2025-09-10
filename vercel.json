@@ -4,9 +4,15 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/cron/daily-quote",
+      "schedule": "0 15 * * *"
+    }
+  ],
   "functions": {
-    "pages/api/advice.ts": {
-      "maxDuration": 10
+    "app/api/cron/daily-quote/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
