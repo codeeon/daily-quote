@@ -40,10 +40,11 @@ const EMERGENCY_FALLBACK_QUOTES: Omit<Quote, 'date' | 'source'>[] = [
 ];
 
 export async function getQuoteForDate(date: string): Promise<Quote> {
-  // Check for future dates - reject if date is in the future
+  // Check for future dates - reject if date is in the future (Korean time)
   const inputDate = new Date(date + 'T00:00:00');
-  const today = new Date();
-  today.setHours(23, 59, 59, 999); // End of today
+  const now = new Date();
+  const koreanNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+  const today = new Date(koreanNow.getFullYear(), koreanNow.getMonth(), koreanNow.getDate(), 23, 59, 59, 999);
   
   if (inputDate > today) {
     throw new Error('미래 날짜의 명언은 아직 공개되지 않았습니다.');
@@ -55,6 +56,9 @@ export async function getQuoteForDate(date: string): Promise<Quote> {
   }
 
   console.log(`Fetching quote from database for date: ${date}`);
+  console.log(`Current Korean time: ${koreanNow.toISOString()}`);
+  console.log(`Today check date: ${today.toISOString()}`);
+  console.log(`Input date: ${inputDate.toISOString()}`);
   
   const supabaseService = new SupabaseService();
   
