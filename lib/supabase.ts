@@ -4,7 +4,12 @@ import type { Quote, QuoteHistory } from '@/types';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = supabaseUrl && supabaseAnonKey 
+// Validate Supabase URL format
+const isValidSupabaseUrl = (url: string): boolean => {
+  return url.startsWith('https://') && url.includes('.supabase.co');
+};
+
+export const supabase = supabaseUrl && supabaseAnonKey && isValidSupabaseUrl(supabaseUrl)
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
@@ -21,6 +26,14 @@ export interface DailyQuoteRecord {
 
 export class SupabaseService {
   private isAvailable(): boolean {
+    if (!supabase) {
+      console.warn('Supabase not available:', {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseAnonKey,
+        urlFormat: supabaseUrl ? (isValidSupabaseUrl(supabaseUrl) ? 'valid' : 'invalid') : 'missing',
+        actualUrl: supabaseUrl
+      });
+    }
     return supabase !== null;
   }
 
