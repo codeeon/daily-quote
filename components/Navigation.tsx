@@ -63,10 +63,9 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           onClick={handlePrevDay}
           disabled={!canGoPrev}
           className={cn(
-            'slide-in shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0',
+            'shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0',
             !canGoPrev && 'opacity-50 cursor-not-allowed'
           )}
-          style={{ animationDelay: '0.1s' }}
           aria-label='이전 날짜'
         >
           <ChevronLeft className='h-4 w-4' />
@@ -85,10 +84,9 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           onClick={handleNextDay}
           disabled={!canGoNext}
           className={cn(
-            'slide-in shadow-sm hover:shadow-md transition-all duration-200 flex-shrink-0',
+            'shadow-sm hover:shadow-md transition-shadow duration-200 flex-shrink-0',
             !canGoNext && 'opacity-50 cursor-not-allowed'
           )}
-          style={{ animationDelay: '0.2s' }}
           aria-label='다음 날짜'
         >
           <ChevronRight className='h-4 w-4' />
@@ -101,8 +99,7 @@ export function Navigation({ currentDate, className }: NavigationProps) {
           variant='outline'
           size='sm'
           onClick={handleTodayClick}
-          className='slide-in text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200 sm:hidden'
-          style={{ animationDelay: '0.3s' }}
+          className='text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200 sm:hidden'
           aria-label='오늘로 이동'
         >
           <Home className='h-4 w-4 mr-2' />
@@ -117,10 +114,9 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         onClick={handlePrevDay}
         disabled={!canGoPrev}
         className={cn(
-          'hidden sm:flex slide-in shadow-sm hover:shadow-md transition-all duration-200',
+          'hidden sm:flex shadow-sm hover:shadow-md transition-shadow duration-200',
           !canGoPrev && 'opacity-50 cursor-not-allowed'
         )}
-        style={{ animationDelay: '0.1s' }}
         aria-label='이전 날짜'
       >
         <ChevronLeft className='h-5 w-5' />
@@ -139,8 +135,7 @@ export function Navigation({ currentDate, className }: NavigationProps) {
             variant='outline'
             size='sm'
             onClick={handleTodayClick}
-            className='slide-in text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200'
-            style={{ animationDelay: '0.3s' }}
+            className='text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50/70 hover:bg-blue-100/70 border-blue-200 hover:border-blue-300 backdrop-blur-sm shadow-sm hover:shadow-md transition-colors duration-200'
             aria-label='오늘로 이동'
           >
             <Home className='h-4 w-4 mr-2' />
@@ -155,10 +150,9 @@ export function Navigation({ currentDate, className }: NavigationProps) {
         onClick={handleNextDay}
         disabled={!canGoNext}
         className={cn(
-          'hidden sm:flex slide-in shadow-sm hover:shadow-md transition-all duration-200',
+          'hidden sm:flex shadow-sm hover:shadow-md transition-shadow duration-200',
           !canGoNext && 'opacity-50 cursor-not-allowed'
         )}
-        style={{ animationDelay: '0.2s' }}
         aria-label='다음 날짜'
       >
         <ChevronRight className='h-5 w-5' />

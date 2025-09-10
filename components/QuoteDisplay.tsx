@@ -22,12 +22,12 @@ export async function QuoteDisplay({ currentDate }: QuoteDisplayProps) {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Navigation */}
-      <div className="slide-in">
+      <div>
         <Navigation currentDate={currentDate} />
       </div>
 
       {/* Quote Display */}
-      <div className="fade-in" style={{ animationDelay: '0.2s' }}>
+      <div className="fade-in">
         {error ? (
           <ErrorDisplay 
             error={{ 
