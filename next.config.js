@@ -9,7 +9,12 @@ const withPWA = require('next-pwa')({
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['korean-advice-open-api.vercel.app'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'korean-advice-open-api.vercel.app',
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
